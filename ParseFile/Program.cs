@@ -3,6 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using ParseFile.Services.Interfaces;
 using ParseFile.Services;
 using ParseFile;
+using BenchmarkDotNet;
+using BenchmarkDotNet.Running;
+
+BenchmarkRunner.Run<CellTowerParseService>();
 
 var services = new ServiceCollection()
     .AddTransient<IParseService, CellTowerParseService>()
@@ -14,6 +18,8 @@ string outputPath = "D:\\Learning\\Projects\\ParseFile\\ParseFile\\result.txt";
 using var serviceProvider = services.BuildServiceProvider();
 var parser = serviceProvider.GetService<Parser>();
 parser.parseFile(inputPath,outputPath);
+
+
  
 
 

@@ -4,26 +4,47 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ParseFile.Services.Interfaces;
+using BenchmarkDotNet;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Order;
 
 namespace ParseFile.Services
 {
-    internal class CellTowerParseService : IParseService
+    [MemoryDiagnoser]
+    [RankColumn]
+    public class CellTowerParseService : IParseService
     {
-        public async void parse(string inputFilePath, string outputFilePath)
+        [Benchmark]
+        public void parse(string inputPath, string outputPath)
         {
-            using StreamReader reader = new StreamReader(inputFilePath);
-            using StreamWriter writer = new StreamWriter(outputFilePath, false);
-
-            writer.WriteLine("Name".PadLeft(5) + "CellId".PadLeft(10) + "lon".PadLeft(17) + "lan".PadLeft(17) + "\n");
+            using StreamReader reader = new StreamReader(inputPath);
+            using StreamWriter writer = new StreamWriter(outputPath, false);
+            StringBuilder builder = new StringBuilder("");
+            writer.WriteLine("Name".PadLeft(5) + "CellId".PadLeft(10) + "lon".PadLeft(17) + "lan".PadLeft(17));
             string? str;
+            int count = 0;
+            int startIndex = 0;
             while ((str = reader.ReadLine()) != null)
             {
-                string[] arr = str.Split(',');
-                if (arr[0] == "GSM" || arr[0] == "UMTS")
+                count = 0;
+                startIndex = 0;
+
+                for (int i = 0; i < str.Length; i++)
                 {
-                     writer.WriteLine(arr[0].PadLeft(5) + arr[4].PadLeft(10) + arr[6].PadLeft(17) + arr[7].PadLeft(17));
+                    if (str[i] == ',')
+                    {
+                        count++;
+                        if (count == 1 || count == 5 || count == 7 || count == 8)
+                        {
+                            string extracted = str.Substring(startIndex, i - startIndex);
+                            builder.Append(extracted + "\t\t");
+                        }
+                        startIndex = i + 1;
+                    }
                 }
+                builder.AppendLine("");
             }
+            writer.WriteLine(builder);
         }
     }
 }

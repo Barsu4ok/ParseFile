@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ParseFile
 {
-    internal class Parser 
+    class Parser 
     {
         IParseService? cellTowerParseService;
 
@@ -16,9 +16,9 @@ namespace ParseFile
             this.cellTowerParseService = parseService;
         }
 
-        public void parseFile(string inputFilePath, string outputFilePath)
+        public void parseFile(string inputPath, string outputPath)
         {
-            cellTowerParseService?.parse(inputFilePath, outputFilePath);
+            cellTowerParseService?.parse(inputPath, outputPath);
         }
     }
 }

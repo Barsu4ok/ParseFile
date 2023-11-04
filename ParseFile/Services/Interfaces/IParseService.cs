@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace ParseFile.Services.Interfaces
 {
-    internal interface IParseService
+    interface IParseService
     {
-        public void parse(string inputFilePath, string outputFilePath);
+        public void parse(string inputPath, string outputPath);
     }
 }
