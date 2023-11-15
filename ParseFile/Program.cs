@@ -5,22 +5,34 @@ using ParseFile.Services;
 using ParseFile;
 using BenchmarkDotNet;
 using BenchmarkDotNet.Running;
+using System.Net;
 
-BenchmarkRunner.Run<CellTowerParseService>();
+//BenchmarkRunner.Run<Test>();
+string inputPath = "D:\\Learning\\Projects\\ParseFile\\ParseFile\\Files\\257.csv";
+string outputPath = "D:\\Learning\\Projects\\ParseFile\\ParseFile\\Files\\result.txt";
+string link = "https://drive.google.com/uc?export=download&id=1ZQBgouAZ5pfHkleQLNRKquTxrQqDDiN7";
+string filePath = @"D:\\Learning\\Projects\\ParseFile\\ParseFile\\Files\\257.csv";
+
 
 var services = new ServiceCollection()
     .AddTransient<IParseService, CellTowerParseService>()
-    .AddTransient<Parser>();
+    .AddTransient<Parser>()
+    .AddTransient<IDownloadService, DownloadFileService>()
+    .AddTransient<Loader>();
 
-string inputPath = "D:\\Learning\\Projects\\ParseFile\\ParseFile\\257.csv";
-string outputPath = "D:\\Learning\\Projects\\ParseFile\\ParseFile\\result.txt";
 
 using var serviceProvider = services.BuildServiceProvider();
+
+var loader = serviceProvider.GetService<Loader>();
 var parser = serviceProvider.GetService<Parser>();
-parser.parseFile(inputPath,outputPath);
+
+loader.downloadFile(link, filePath);
+parser.parseFile(inputPath, outputPath);
 
 
- 
+
+
+
 
 
 

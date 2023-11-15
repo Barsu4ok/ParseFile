@@ -14,14 +14,13 @@ namespace ParseFile.Services
     [RankColumn]
     public class CellTowerParseService : IParseService
     {
-        [Benchmark]
         public void parse(string inputPath, string outputPath)
         {
             using StreamReader reader = new StreamReader(inputPath);
             using StreamWriter writer = new StreamWriter(outputPath, false);
-            StringBuilder builder = new StringBuilder("");
             writer.WriteLine("Name".PadLeft(5) + "CellId".PadLeft(10) + "lon".PadLeft(17) + "lan".PadLeft(17));
-            string? str;
+            ReadOnlySpan<char> str;
+            ReadOnlySpan<char> extracted;
             int count = 0;
             int startIndex = 0;
             while ((str = reader.ReadLine()) != null)
@@ -36,15 +35,15 @@ namespace ParseFile.Services
                         count++;
                         if (count == 1 || count == 5 || count == 7 || count == 8)
                         {
-                            string extracted = str.Substring(startIndex, i - startIndex);
-                            builder.Append(extracted + "\t\t");
+                            extracted = str.Slice(startIndex, i - startIndex);
+                            writer.Write(extracted);
+                            writer.Write("\t\t");
                         }
                         startIndex = i + 1;
                     }
                 }
-                builder.AppendLine("");
+                writer.WriteLine("");
             }
-            writer.WriteLine(builder);
         }
     }
 }
