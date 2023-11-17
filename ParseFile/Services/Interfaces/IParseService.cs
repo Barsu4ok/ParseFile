@@ -8,6 +8,6 @@ namespace ParseFile.Services.Interfaces
 {
     interface IParseService
     {
-        public void parse(string inputPath, string outputPath);
+        public void parse(HttpResponseMessage response, string outputPath);
     }
 }

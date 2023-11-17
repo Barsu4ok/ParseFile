@@ -2,20 +2,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ParseFile.Services
 {
-    class DownloadFileService : IDownloadService
+    internal class DownloadFileService : IDownloadService
     {
-        public void download(string uri,string filePath)
+        public HttpResponseMessage download(string uri)
         {
-            using (WebClient client = new WebClient())
-            {
-                client.DownloadFile(new Uri(uri), filePath);
-            }
+            using HttpClient httpClient = new HttpClient();
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            HttpResponseMessage response = httpClient.Send(request);
+            return response;
         }
     }
 }

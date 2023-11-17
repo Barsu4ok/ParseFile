@@ -8,6 +8,6 @@ namespace ParseFile.Services.Interfaces
 {
     interface IDownloadService
     {
-        public void download(string uri,string filePath);
+        public HttpResponseMessage download(string uri);
     }
 }

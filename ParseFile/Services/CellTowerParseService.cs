@@ -14,35 +14,57 @@ namespace ParseFile.Services
     [RankColumn]
     public class CellTowerParseService : IParseService
     {
-        public void parse(string inputPath, string outputPath)
+        public void parse(HttpResponseMessage response, string outputPath)
         {
-            using StreamReader reader = new StreamReader(inputPath);
-            using StreamWriter writer = new StreamWriter(outputPath, false);
-            writer.WriteLine("Name".PadLeft(5) + "CellId".PadLeft(10) + "lon".PadLeft(17) + "lan".PadLeft(17));
-            ReadOnlySpan<char> str;
-            ReadOnlySpan<char> extracted;
-            int count = 0;
-            int startIndex = 0;
-            while ((str = reader.ReadLine()) != null)
+            if (response.IsSuccessStatusCode)
             {
-                count = 0;
-                startIndex = 0;
-
-                for (int i = 0; i < str.Length; i++)
+                using Stream dataStream =  response.Content.ReadAsStream();
+                using StreamReader reader = new StreamReader(dataStream);
+                using StreamWriter writer = new StreamWriter(outputPath, false);
+                ReadOnlySpan<char> str;
+                ReadOnlySpan<char> extracted;
+                int count = 0;
+                int startIndex = 0;
+                /*
+                 * The source line in the file is represented in the following format:
+                 * "GSM,257,2,84,55722,0,29.478378,54.703674,1000,2,1,1459770590,1459770590,0"
+                 * ',' is used as a delimiter for the source string
+                 * The values at the 1,5,7,8 positions are extracted from the source string:
+                 * first - Type of communication,
+                 * fifth - Cell tower ID,
+                 * seventh - longitude,
+                 * eighth - latitude
+                 * Output string format:
+                 * "GSM,55722,29.478378,54.703674,"
+                 * ',' is used as a delimiter
+                 */
+                while ((str = reader.ReadLine()) != null)
                 {
-                    if (str[i] == ',')
+                    if (str.StartsWith("GSM") || str.StartsWith("UMTS"))
                     {
-                        count++;
-                        if (count == 1 || count == 5 || count == 7 || count == 8)
+                        count = 0;
+                        startIndex = 0;
+                        for (int i = 0; i < str.Length; i++)
                         {
-                            extracted = str.Slice(startIndex, i - startIndex);
-                            writer.Write(extracted);
-                            writer.Write("\t\t");
+                            if (str[i] == ',')
+                            {
+                                count++;
+                                if (count == 1 || count == 5 || count == 7 || count == 8)
+                                {
+                                    extracted = str.Slice(startIndex, i - startIndex);
+                                    writer.Write(extracted);
+                                    writer.Write(',');
+                                }
+                                startIndex = i + 1;
+                            }
                         }
-                        startIndex = i + 1;
+                        writer.WriteLine("");
                     }
                 }
-                writer.WriteLine("");
+            }
+            else
+            {
+                Console.WriteLine("Failed to execute the request. Error code: " + response.StatusCode);
             }
         }
     }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ namespace ParseFile
     {
         string inputPath = "D:\\Learning\\Projects\\ParseFile\\ParseFile\\Files\\257.csv";
         string outputPath = "D:\\Learning\\Projects\\ParseFile\\ParseFile\\Files\\result.txt";
+        string link = "https://drive.google.com/uc?export=download&id=1ZQBgouAZ5pfHkleQLNRKquTxrQqDDiN7";
+        string filePath = @"D:\\Learning\\Projects\\ParseFile\\ParseFile\\Files\\257.csv";
 
         [Benchmark]
         public void testReadOnlySpan()
